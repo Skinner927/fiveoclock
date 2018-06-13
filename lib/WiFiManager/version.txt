@@ -1,0 +1,7 @@
+0749e1bdd76c811a5a554ff5cc5fe2fb02fa8dd2
+Last commit 5/15/2018
+Pulled 6/13/2018
+https://github.com/tzapu/WiFiManager
+
+Made a slight modification to WiFiManager to have a callback on 
+failed connection. setBadCredentialsCallback()
