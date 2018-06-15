@@ -3,6 +3,7 @@
 #include <DNSServer.h>        //Local DNS Server used for redirecting all requests to the configuration portal
 #include <ESP8266WebServer.h> //Local WebServer used to serve the configuration portal
 #include <WiFiManager.h>      //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include <ESP8266HTTPClient.h>
 
 #include "SerialHelp.h"
 #include "SharedESPMessages.h"
@@ -10,6 +11,8 @@
 #define WEB_HOST "freddy.dennisskinner.com"
 #define WEB_PATH "/freddy-clock.php"
 #define WEB_PORT 80
+
+#define WEB_URL "http://freddy.dennisskinner.com/freddy-clock.php"
 
 WiFiManager manager;
 
@@ -26,6 +29,23 @@ void badCredentialsCallback(WiFiManager *myManager)
 }
 
 void getTime()
+{
+    HTTPClient http;
+    http.begin(WEB_URL);
+    if (!http.GET())
+    {
+        Serial.println("FAIL");
+        http.end();
+        return;
+    }
+    String payload = http.getString();
+    Serial.println(payload);
+    http.end();
+}
+
+// This didn't work because of chunked encoding but I'm
+// keeping it for sake of reference.
+void xgetTime()
 {
     WiFiClient client;
     if (!client.connect(WEB_HOST, WEB_PORT))
@@ -45,8 +65,10 @@ void getTime()
 
     // Wait up to 5 seconds for server to respond
     uint16_t count = 0;
-    while(!client.available()) {
-        if (count >= 500) {
+    while (!client.available())
+    {
+        if (count >= 500)
+        {
             // abort
             Serial.println("FAIL");
             return;
@@ -54,11 +76,12 @@ void getTime()
         count++;
         delay(10);
     }
-    while(client.available()) {
+    while (client.available())
+    {
         Serial.print((char)client.read());
     }
     Serial.println();
-    
+
     client.flush();
     client.stop();
 }

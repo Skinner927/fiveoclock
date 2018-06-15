@@ -126,6 +126,10 @@ void refreshTime()
     RtcDateTime compiled = RtcDateTime(epoch);
     Rtc.SetDateTime(compiled);
 
+    // TODO: Put these in temp storage and only after we
+    // have all offsets should we store in case connection
+    // died.
+    
     // Update offsets
     for (uint8_t i = 0; i < clock_count; i++)
     {
