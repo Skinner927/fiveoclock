@@ -8,6 +8,7 @@
 #define CONNECT_WIFI_SUCCESS 'E'
 #define CONNECT_WIFI_FAILURE 'F'
 #define CONNECT_WIFI_BAD_CREDS 'G'
+#define GET_TIME 'L'
 #define RESET_WIFI_SETTINGS 'R'
 
 #endif

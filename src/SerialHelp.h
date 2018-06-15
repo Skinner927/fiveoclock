@@ -12,4 +12,6 @@ void sendAndWait(HardwareSerial &serial, const char *cmd);
 char serialWait(HardwareSerial &serial, const char *waitFor, uint8_t waitForLength, unsigned long timeout_in_ms);
 char serialWait(HardwareSerial &serial, const char waitFor, unsigned long timeout_in_ms);
 
+String serialReadLine(HardwareSerial &serial);
+
 #endif

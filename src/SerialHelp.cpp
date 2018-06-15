@@ -42,3 +42,19 @@ char serialWait(HardwareSerial &serial, const char waitFor, unsigned long timeou
     char waitArray[1] = {waitFor};
     return serialWait(serial, waitArray, 1, timeout_in_ms);
 }
+
+String serialReadLine(HardwareSerial &serial) {
+    String output;
+    while(serial.available() < 1) {
+        delay(10);
+    }
+    while(serial.available() > 0) {
+        char c = serial.read();
+        if (c == '\n') {
+            return output;
+        }
+        output += c;
+    }
+    // Should never get here
+    return output;
+}
