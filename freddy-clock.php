@@ -1,4 +1,5 @@
 <?php
+header('Content-type: text/plain; charset=ASCII');
 // Order these in order they should be printed
 // http://php.net/manual/en/timezones.php
 $timezones = [

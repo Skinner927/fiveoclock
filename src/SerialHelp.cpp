@@ -11,7 +11,7 @@ void sendAndWait(HardwareSerial &serial, const char *cmd)
     clearSerial(serial);
     serial.print(cmd);
     while (serial.available() < 1)
-        delay(100);
+        delay(1);
 }
 
 char serialWait(HardwareSerial &serial, const char *waitFor, uint8_t waitForLength, unsigned long timeout_in_ms)
@@ -21,7 +21,7 @@ char serialWait(HardwareSerial &serial, const char *waitFor, uint8_t waitForLeng
     {
         if (serial.available() < 1)
         {
-            delay(100);
+            delay(1);
             continue;
         }
         while (serial.available() > 0)
@@ -46,7 +46,7 @@ char serialWait(HardwareSerial &serial, const char waitFor, unsigned long timeou
 String serialReadLine(HardwareSerial &serial) {
     String output;
     while(serial.available() < 1) {
-        delay(10);
+        delay(1);
     }
     while(serial.available() > 0) {
         char c = serial.read();

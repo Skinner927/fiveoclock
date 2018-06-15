@@ -7,9 +7,9 @@
 #include "SerialHelp.h"
 #include "SharedESPMessages.h"
 
-#define WEB_HOST "192.168.1.167"
-#define WEB_PATH "/"
-#define WEB_PORT 8080
+#define WEB_HOST "freddy.dennisskinner.com"
+#define WEB_PATH "/freddy-clock.php"
+#define WEB_PORT 80
 
 WiFiManager manager;
 
@@ -35,9 +35,13 @@ void getTime()
     }
     client.println("GET " WEB_PATH " HTTP/1.1");
     client.println("Host: " WEB_HOST);
+    client.println("Accept: text/plain;charset=US-ASCII");
+    client.println("Accept-Charset: US-ASCII, ASCII");
+    client.println("Accept-Encoding: identity");
+    //client.println("Transfer-Encoding: identity");
     client.println("Connection: close");
     client.println();
-    delay(10);
+    delay(100);
 
     // Wait up to 5 seconds for server to respond
     uint16_t count = 0;
@@ -54,6 +58,9 @@ void getTime()
         Serial.print((char)client.read());
     }
     Serial.println();
+    
+    client.flush();
+    client.stop();
 }
 
 void setup()

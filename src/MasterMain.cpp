@@ -19,7 +19,7 @@
 
 // Number of clocks we'll be printing to
 #define clock_count 5
-int offsets[clock_count] = {0};
+int32_t offsets[clock_count] = {0};
 
 const String web_start_flag = "!$$%%\n";
 
@@ -61,19 +61,14 @@ void printDateTime(HardwareSerial &serial, const RtcDateTime &dt)
 bool clearBufferUntilAfter(HardwareSerial &serial, const String boundary, int timeout)
 {
     char firstChar = boundary[0];
-    uint8_t max = boundary.length() - 1;
-
-    while(serial.available() > 0) {
-        DS_LOG_l((char)NET.read());
-    }
-
-    while(true) 
+    while (true)
     {
-        DS_LOG_l("Looking for");
+        DS_LOG_l("Looking for: ");
         DS_LOG(firstChar);
         // wait for the first character
         char r = serialWait(serial, firstChar, timeout);
-        if (r == '\0') {
+        if (r == '\0')
+        {
             // Timeout
             return false;
         }
@@ -81,16 +76,19 @@ bool clearBufferUntilAfter(HardwareSerial &serial, const String boundary, int ti
         DS_LOG("Found start");
         DS_LOG("Expected   Found");
         bool badChar = false;
-        for (uint8_t j = 1; j < max; j++) {
+        for (uint8_t j = 1; j < boundary.length(); j++)
+        {
             // Wait for next character
-            while(serial.available() < 1) {
+            while (serial.available() < 1)
+            {
                 delay(1);
             }
             char c = serial.read();
             DS_LOG_l(c);
             DS_LOG_l("  ");
             DS_LOG(boundary[j]);
-            if (c != boundary[j]) {
+            if (c != boundary[j])
+            {
                 DS_LOG("MISSED IT");
                 badChar = true;
                 break;
@@ -98,7 +96,8 @@ bool clearBufferUntilAfter(HardwareSerial &serial, const String boundary, int ti
             DS_LOG("KEEP GOING!");
         }
         // We did it!
-        if (!badChar) {
+        if (!badChar)
+        {
             return true;
         }
         // Otherwise we failed, loop around and wait for another sequence
@@ -112,11 +111,9 @@ void refreshTime()
     clearSerial(NET);
     NET.print(GET_TIME);
     DS_LOG("Waiting for server to respond");
-    while(NET.available()) {
-        DS_LOG_l((char)NET.read());
-    }
     // This dumps the HTTP headers
-    if (!clearBufferUntilAfter(NET, web_start_flag, 10000)) {
+    if (!clearBufferUntilAfter(NET, web_start_flag, 10000))
+    {
         DS_LOG("Web request failed, not updating time.");
         return;
     }
@@ -132,7 +129,10 @@ void refreshTime()
     // Update offsets
     for (uint8_t i = 0; i < clock_count; i++)
     {
-        int offset = serialReadLine(NET).toInt();
+        char offsetStr[17] = {'\0'};
+        serialReadLine(NET).toCharArray(offsetStr, 17);
+        int32_t offset = strtol(offsetStr, NULL, 10);
+        //int offset = serialReadLine(NET).toInt();
         DS_LOG_l("Offset ");
         DS_LOG_l(i);
         DS_LOG_l(" ");
@@ -251,17 +251,20 @@ void loop()
     }
     now = Rtc.GetDateTime();
     uint32_t nowWithoutSeconds = now.TotalSeconds() - now.Second();
-    if (lastEpochWithoutSeconds != nowWithoutSeconds) {
+    if (lastEpochWithoutSeconds != nowWithoutSeconds)
+    {
         lastEpochWithoutSeconds = nowWithoutSeconds;
 
         // AT this point we'd update the clocks
-        for (uint8_t i = 0; i < clock_count; i++) {
+        DS_LOG("====================");
+        for (uint8_t i = 0; i < clock_count; i++)
+        {
             RtcDateTime myTime = RtcDateTime(now.TotalSeconds() + offsets[i]);
             DS_LOG_l("Clock ");
             DS_LOG_l(i);
             DS_LOG(":");
             printDateTime(Serial, myTime);
-        }    
+        }
     }
 
     // Sleep for a second every loop
